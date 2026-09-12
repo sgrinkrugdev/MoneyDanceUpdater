@@ -1,0 +1,24 @@
+# Python caches
+__pycache__/
+*.py[cod]
+
+# Runtime inputs and outputs
+*.csv
+*.tsv
+*.log
+*_log.txt
+logs/
+outputs/
+
+# Moneydance data files
+*.moneydance/
+*.moneydance/**
+*.moneydancearchive
+*.mdbackup
+moneydance_test_copies/
+
+# Local-only configuration and secrets
+*.local.py
+*.local.json
+.env
+.env.*
