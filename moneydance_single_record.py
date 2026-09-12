@@ -120,7 +120,11 @@ def card_last4(card_name):
     return match.group(1) if match else None
 
 def account_candidates(accounts, card_name):
-    """Resolve a CSV card to Moneydance accounts by card last four digits."""
+    """Resolve a CSV card to Moneydance accounts by explicit alias or last four digits."""
+    card_text = (card_name or '').strip()
+    explicit = EXPLICIT_CARD_ACCOUNTS.get(card_text)
+    if explicit:
+        return [a for a in accounts if a.getAccountName() == explicit]
     last4 = card_last4(card_name)
     if not last4:
         return []
@@ -303,6 +307,7 @@ def apply_all(book, rows, approved_plan, expected_folder=TEST_FOLDER):
     current = plan_all(book, rows, expected_folder, approved_plan.get('suffix'))
     if [(x['txn_id'], x['expected_memo']) for x in current['plan']] != [(x['txn_id'], x['expected_memo']) for x in approved_plan['plan']]:
         raise RuntimeError('Bulk preview is stale; no edits made')
+    changed = False
     for item in current['plan']:
         if item['memo_before'] == item['expected_memo']: continue
         txn = book.getItemForID(item['txn_id'])
@@ -312,6 +317,11 @@ def apply_all(book, rows, approved_plan, expected_folder=TEST_FOLDER):
         if fresh.getMemo() != item['expected_memo'] or fresh.getDescription() != item['description']:
             raise RuntimeError('Read-back verification failed for one eligible transaction')
         current['counters']['edited'] += 1
+        changed = True
+    if changed:
+        book.saveTrunkFile()
+        if not book.save():
+            raise RuntimeError('Final save failed after eligible transaction edits')
     # Commit CSV status only after every eligible Moneydance row has succeeded.
     eligible_indexes = set(item['row_index'] for item in current['plan'])
     report_by_index = dict((item['row_index'], item) for item in current['report'])

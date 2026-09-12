@@ -22,3 +22,9 @@ moneydance_test_copies/
 *.local.json
 .env
 .env.*
+
+#data files
+test_data/
+
+# Local runtime config
+moneydance_update.config.bat

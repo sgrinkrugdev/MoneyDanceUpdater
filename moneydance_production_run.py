@@ -23,6 +23,9 @@ updater.CSV_PATH = os.path.abspath(sys.argv[1])
 updater.TEST_FOLDER = os.path.abspath(sys.argv[2])
 updater.AUTHORIZED_ONLY = False
 LOG_PATH = os.path.abspath(sys.argv[3])
+log_dir = os.path.dirname(LOG_PATH)
+if log_dir and not os.path.isdir(log_dir):
+    os.makedirs(log_dir)
 
 class JavaTeeOutputStream(OutputStream):
     def __init__(self, screen, log):
@@ -42,12 +45,11 @@ original_stdout, original_stderr = sys.stdout, sys.stderr
 
 class Tee(object):
     def write(self, text):
-        original_stdout.write(text)
         if not isinstance(text, str): text = str(text)
         java_tee.print(text)
-        original_stdout.flush(); java_tee.flush()
+        java_tee.flush()
     def flush(self):
-        original_stdout.flush(); java_tee.flush()
+        java_tee.flush()
 
 sys.stdout = Tee(); sys.stderr = Tee()
 
