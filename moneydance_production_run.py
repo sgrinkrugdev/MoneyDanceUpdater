@@ -16,6 +16,14 @@ from java.io import FileOutputStream, OutputStream, PrintStream
 import moneydance_single_record as updater
 import moneydance_headless_test as runner
 
+def project_version():
+    version_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'VERSION')
+    try:
+        with open(version_path, 'r') as stream:
+            return stream.read().strip()
+    except IOError:
+        return '0.0.0'
+
 if len(sys.argv) != 4:
     raise RuntimeError('Usage: moneydance_production_run.py CSV_PATH MONEYDANCE_FOLDER LOG_PATH')
 
@@ -52,6 +60,7 @@ class Tee(object):
         java_tee.flush()
 
 sys.stdout = Tee(); sys.stderr = Tee()
+print('MoneyDanceUpdate version=%s' % project_version())
 
 class Password(SecretKeyCallback):
     def __init__(self, value): self.value = value
