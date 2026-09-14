@@ -6,6 +6,7 @@ import io
 import ntpath
 import os
 import re
+import shutil
 from collections import defaultdict
 import sys
 from datetime import date, datetime
@@ -66,19 +67,30 @@ def write_csv(path, rows):
     fields = list(rows[0].keys()) if rows else ['MD Match']
     if 'MD Match' not in fields:
         fields.append('MD Match')
-    with open(path, 'wb') as stream:
-        writer = csv.DictWriter(stream, fieldnames=fields, lineterminator='\n')
-        writer.writeheader()
-        for row in rows:
-            encoded = {}
-            for field in fields:
-                value = row.get(field, '')
-                if isinstance(value, unicode):
-                    encoded[field] = value.encode('utf-8')
-                else:
-                    encoded[field] = str(value).encode('utf-8')
-            writer.writerow(encoded)
-
+    tmp = path + '.tmp'
+    try:
+        with open(tmp, 'wb') as stream:
+            writer = csv.DictWriter(stream, fieldnames=fields, lineterminator='\n')
+            writer.writeheader()
+            for row in rows:
+                encoded = {}
+                for field in fields:
+                    value = row.get(field, '')
+                    if isinstance(value, unicode):
+                        encoded[field] = value.encode('utf-8')
+                    else:
+                        encoded[field] = str(value).encode('utf-8')
+                writer.writerow(encoded)
+        if os.path.exists(path):
+            os.remove(path)
+        shutil.move(tmp, path)
+    except Exception as error:
+        try:
+            if os.path.exists(tmp):
+                os.remove(tmp)
+        except Exception:
+            pass
+        raise RuntimeError('CSV_WRITE_FAILED: %s could not be updated. Close Excel, editor, preview panes, or any process using the CSV and rerun. Original error: %s' % (path, error))
 def generated_memo(memo):
     return bool(memo and re.search(r' AI_MEMO_[0-9]{12}$', memo))
 
@@ -133,6 +145,22 @@ def account_candidates(accounts, card_name):
         return [a for a in accounts if a.getAccountName() == explicit]
     return [a for a in accounts if re.search(r'\d{4}\s*$', a.getAccountName() or '')
             and card_last4(a.getAccountName()) == last4]
+
+def is_gift_card_row(row, account):
+    card_text = (row.get('Credit card', '') or '').strip()
+    mapped_account = EXPLICIT_CARD_ACCOUNTS.get(card_text)
+    return (card_text == 'Amazon Gift Card' or mapped_account == 'Amazon Gift Card' or
+            account.getAccountName() == 'Amazon Gift Card')
+
+def gift_card_order_number(row):
+    order = (row.get('Order number', '') or '').strip()
+    return order if re.match(r'^\d{3}-\d{7}-\d{7}$', order) else ''
+
+def gift_card_order_matches(txn, row):
+    order = gift_card_order_number(row)
+    if not order:
+        return False
+    return order in ((txn.getDescription() or '') + ' ' + (txn.getMemo() or ''))
 
 def preview(book, rows, expected_folder=TEST_FOLDER):
     from com.infinitekind.moneydance.model import ParentTxn
@@ -249,6 +277,10 @@ def plan_all(book, rows, expected_folder=TEST_FOLDER, suffix=None):
             continue
         if row_index in grouped_assignments:
             matches = [grouped_assignments[row_index]]
+        elif is_gift_card_row(row, matching_accounts[0]) and gift_card_order_number(row):
+            matches = [t for t, td, value in account_txns
+                       if amount_matches_moneydance(value, row['Order amount']) and
+                       gift_card_order_matches(t, row)]
         else:
             matches = [t for t, td, value in account_txns if abs((td - d).days) <= 3 and
                        amount_matches_moneydance(value, row['Order amount'])]
@@ -266,7 +298,7 @@ def plan_all(book, rows, expected_folder=TEST_FOLDER, suffix=None):
             counters['unmatched'] += 1; exceptions.append(exception)
             report.append(dict(row_index=row_index, date=row['Date'], amount=row['Order amount'],
                                item_description=row['Item description'], status='unmatched',
-                               explanation='No Moneydance transaction with matching amount within +/- 3 days'))
+                               explanation=('No Amazon Gift Card transaction with matching amount and order number' if is_gift_card_row(row, matching_accounts[0]) and gift_card_order_number(row) else 'No Moneydance transaction with matching amount within +/- 3 days')))
             continue
         if len(matches) > 1:
             counters['ambiguous'] += 1; exceptions.append(exception)
@@ -401,5 +433,3 @@ def main(context):
 
 if __name__ == '__main__':
     main(globals())
-
-

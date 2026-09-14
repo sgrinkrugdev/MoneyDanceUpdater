@@ -10,7 +10,9 @@ class LocalPassword(SecretKeyCallback):
         if self.console is None:
             raise RuntimeError('No private terminal available. Run the launcher in a local PowerShell window.')
 
-    def read(self):
+    def read(self, moneydance_path=None):
+        if moneydance_path:
+            self.console.printf('Trying to open Moneydance file: %s\n' % moneydance_path)
         self.console.printf('Moneydance password: ')
         chars = self.console.readPassword()
         if chars is None:

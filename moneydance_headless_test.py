@@ -105,18 +105,19 @@ def run(folder, callback):
     result['csv_verification_writeback'] = 'PASS'
     result['disk_reopen_verification'] = 'PASS'
     result['repeat_run_verification'] = 'PASS'
-    print(json.dumps(result, indent=2))
+    return result
 
 if __name__ == '__main__':
     # A separate Moneydance process could overwrite changes from this utility.
     import subprocess
     processes = subprocess.check_output(['tasklist.exe', '/FI', 'IMAGENAME eq Moneydance.exe', '/FO', 'CSV', '/NH'])
     if 'moneydance.exe' in processes.lower():
-        raise RuntimeError('Close Moneydance completely before running this utility')
+        raise RuntimeError('MONEYDANCE_OPEN: Close Moneydance completely before running this utility. Moneydance can overwrite this headless update if it remains open.')
     password = LocalPassword()
     try:
         password.read()
-        run(sys.argv[1], password)
+        result = run(sys.argv[1], password)
+        print(json.dumps(result, indent=2))
     except RuntimeError as error:
         # Only our own fixed diagnostics; never print a library exception message.
         message = str(error)
