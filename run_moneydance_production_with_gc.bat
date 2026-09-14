@@ -17,19 +17,7 @@ if not defined MD_CSV_PATH (
   exit /b 2
 )
 
-set "PS_GC=$p=Read-Host 'Trying to open \"%MD_BOOK_FOLDER%\", please enter the password' -AsSecureString; $b=[Runtime.InteropServices.Marshal]::SecureStringToBSTR($p); try {[Runtime.InteropServices.Marshal]::PtrToStringBSTR($b) | & '%MD_JAVA%' '-Djava.awt.headless=true' '-Dpython.cachedir.skip=true' '-cp' '%MD_LIB%' 'org.python.util.jython' '-B' '%MD_GC_RUNNER%' '%MD_GC_CSV_PATH%' '%MD_BOOK_FOLDER%' '%MD_LOG_PATH%'} finally {[Runtime.InteropServices.Marshal]::ZeroFreeBSTR($b)}"
-powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "%PS_GC%"
-set "GC_EXIT=%ERRORLEVEL%"
-if not "%GC_EXIT%"=="0" exit /b %GC_EXIT%
-
-findstr /C:"\"INVALID\"" /C:"\"FAILED\"" "%MD_GC_CSV_PATH%" >nul 2>nul
-if "%ERRORLEVEL%"=="0" (
-  if /I "%MD_GC_ON_IMPORT_ISSUES%"=="abort" exit /b 3
-  if /I "%MD_GC_ON_IMPORT_ISSUES%"=="prompt" (
-    choice /C YN /M "Gift Card import reported INVALID or FAILED rows. Continue to Amazon memo matcher"
-    if errorlevel 2 exit /b 3
-  )
-)
-
-call "%~dp0run_moneydance_production.bat"
-exit /b %ERRORLEVEL%
+set "PS_CMD=$p=Read-Host 'Trying to open \"%MD_BOOK_FOLDER%\", please enter the password' -AsSecureString; $b=[Runtime.InteropServices.Marshal]::SecureStringToBSTR($p); $plain=$null; try {$plain=[Runtime.InteropServices.Marshal]::PtrToStringBSTR($b); $plain | & '%MD_JAVA%' '-Djava.awt.headless=true' '-Dpython.cachedir.skip=true' '-cp' '%MD_LIB%' 'org.python.util.jython' '-B' '%MD_GC_RUNNER%' '%MD_GC_CSV_PATH%' '%MD_BOOK_FOLDER%' '%MD_LOG_PATH%'; $gcExit=$LASTEXITCODE; if($gcExit -ne 0){exit $gcExit}; $issues=$false; if(Test-Path '%MD_GC_CSV_PATH%'){$text=Get-Content -Raw '%MD_GC_CSV_PATH%'; $issues=($text -match '\"INVALID\"' -or $text -match '\"FAILED\"')}; if($issues){ if('%MD_GC_ON_IMPORT_ISSUES%' -ieq 'abort'){exit 3}; if('%MD_GC_ON_IMPORT_ISSUES%' -ieq 'prompt'){$answer=Read-Host 'Gift Card import reported INVALID or FAILED rows. Continue to Amazon memo matcher? [Y/N]'; if($answer -notmatch '^[Yy]'){exit 3}}}; $plain | & '%MD_JAVA%' '-Djava.awt.headless=true' '-Dpython.cachedir.skip=true' '-cp' '%MD_LIB%' 'org.python.util.jython' '-B' '%MD_RUNNER%' '%MD_CSV_PATH%' '%MD_BOOK_FOLDER%' '%MD_LOG_PATH%'; exit $LASTEXITCODE} finally {if($b -ne [IntPtr]::Zero){[Runtime.InteropServices.Marshal]::ZeroFreeBSTR($b)}; $plain=$null}"
+powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "%PS_CMD%"
+set "EXIT_CODE=%ERRORLEVEL%"
+exit /b %EXIT_CODE%

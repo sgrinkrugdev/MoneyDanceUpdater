@@ -326,6 +326,7 @@ def plan_all(book, rows, expected_folder=TEST_FOLDER, suffix=None):
         expected = (txn.getMemo() if generated_memo_for_item(txn.getMemo(), row['Item description'])
                     else row['Item description'] + suffix)
         plan.append(dict(row_index=row_index, row=row, txn_id=txn_id, expected_memo=expected,
+                         account_name=matching_accounts[0].getAccountName(),
                          description=txn.getDescription(), memo_before=txn.getMemo()))
         report.append(dict(row_index=row_index, date=row['Date'], amount=row['Order amount'],
                            item_description=row['Item description'], status='eligible',
@@ -337,6 +338,7 @@ def plan_all(book, rows, expected_folder=TEST_FOLDER, suffix=None):
 
 def apply_all(book, rows, approved_plan, expected_folder=TEST_FOLDER):
     current = plan_all(book, rows, expected_folder, approved_plan.get('suffix'))
+    current['edited_by_account'] = {}
     if [(x['txn_id'], x['expected_memo']) for x in current['plan']] != [(x['txn_id'], x['expected_memo']) for x in approved_plan['plan']]:
         raise RuntimeError('Bulk preview is stale; no edits made')
     changed = False
@@ -349,6 +351,8 @@ def apply_all(book, rows, approved_plan, expected_folder=TEST_FOLDER):
         if fresh.getMemo() != item['expected_memo'] or fresh.getDescription() != item['description']:
             raise RuntimeError('Read-back verification failed for one eligible transaction')
         current['counters']['edited'] += 1
+        account_name = item.get('account_name') or 'UNKNOWN'
+        current['edited_by_account'][account_name] = current['edited_by_account'].get(account_name, 0) + 1
         changed = True
     if changed:
         book.saveTrunkFile()

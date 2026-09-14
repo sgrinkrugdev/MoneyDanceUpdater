@@ -182,85 +182,85 @@ Each plan item has two identifiers: the outline number shows current structure, 
 
     2.4. `[AGC-0066]` Prevent duplicate imports. Status: Tested
 
-        2.4.1. `[AGC-0067]` Check for duplicates in the input CSV before import.
+        2.4.1. `[AGC-0067]` Check for duplicates in the input CSV before import. Status: Tested
 
-        2.4.2. `[AGC-0068]` Check for matching existing Moneydance transactions before creating new transactions.
+        2.4.2. `[AGC-0068]` Check for matching existing Moneydance transactions before creating new transactions. Status: Tested
 
-        2.4.3. `[AGC-0069]` Use the generated source fingerprint as the primary duplicate key where available.
+        2.4.3. `[AGC-0069]` Use the generated source fingerprint as the primary duplicate key where available. Status: Tested
 
-        2.4.4. `[AGC-0070]` Fall back to a deterministic row fingerprint when a stable Amazon identifier is not available.
+        2.4.4. `[AGC-0070]` Fall back to a deterministic row fingerprint when a stable Amazon identifier is not available. Status: Implemented
 
-        2.4.5. `[AGC-0204]` Allow multiple legitimate Gift Card rows with the same date, amount, and transaction type; do not collapse them unless the source fingerprint proves they are the same row.
+        2.4.5. `[AGC-0204]` Allow multiple legitimate Gift Card rows with the same date, amount, and transaction type; do not collapse them unless the source fingerprint proves they are the same row. Status: Implemented
 
-        2.4.6. `[AGC-0205]` If multiple existing Moneydance transactions match a CSV row without the same stored fingerprint, import the row and include the fingerprint in the new record.
+        2.4.6. `[AGC-0205]` If multiple existing Moneydance transactions match a CSV row without the same stored fingerprint, import the row and include the fingerprint in the new record. Status: Implemented
 
-        2.4.7. `[AGC-0226]` If an existing Moneydance transaction has the same `Check#` fingerprint but different date, amount, or description, fail that row with `FINGERPRINT_MISMATCH` instead of trusting the fingerprint alone.
+        2.4.7. `[AGC-0226]` If an existing Moneydance transaction has the same `Check#` fingerprint but different date, amount, or description, fail that row with `FINGERPRINT_MISMATCH` instead of trusting the fingerprint alone. Status: Implemented
 
-        2.4.8. `[AGC-0227]` Split duplicate import statuses between `SKIPPED_DUPLICATE_IN_CSV` and `SKIPPED_DUPLICATE_IN_MD`; do not use one generic duplicate import status.
+        2.4.8. `[AGC-0227]` Split duplicate import statuses between `SKIPPED_DUPLICATE_IN_CSV` and `SKIPPED_DUPLICATE_IN_MD`; do not use one generic duplicate import status. Status: Tested
 
     2.5. `[AGC-0071]` Add importer reporting. Status: Implemented and dry-run tested
 
-        2.5.1. `[AGC-0072]` Report imported rows.
+        2.5.1. `[AGC-0072]` Report imported rows. Status: Tested
 
-        2.5.2. `[AGC-0073]` Report skipped duplicate rows.
+        2.5.2. `[AGC-0073]` Report skipped duplicate rows. Status: Tested
 
-        2.5.3. `[AGC-0074]` Report invalid rows.
+        2.5.3. `[AGC-0074]` Report invalid rows. Status: Implemented
 
-        2.5.4. `[AGC-0075]` Report Moneydance write failures with enough row detail to debug.
+        2.5.4. `[AGC-0075]` Report Moneydance write failures with enough row detail to debug. Status: Implemented
 
-        2.5.5. `[AGC-0206]` Write importer status columns back to the Gift Card CSV, including `MD Import`, `MD Verify`, and `MD Failure reason`.
+        2.5.5. `[AGC-0206]` Write importer status columns back to the Gift Card CSV, including `MD Import`, `MD Verify`, and `MD Failure reason`. Status: Tested
 
-        2.5.6. `[AGC-0207]` Continue processing valid rows after invalid rows or per-row failures, keep a log, and update each row status in the CSV.
+        2.5.6. `[AGC-0207]` Continue processing valid rows after invalid rows or per-row failures, keep a log, and update each row status in the CSV. Status: Implemented
 
-        2.5.7. `[AGC-0208]` Permit partial import success for now; successful valid rows may be imported even when other rows fail.
+        2.5.7. `[AGC-0208]` Permit partial import success for now; successful valid rows may be imported even when other rows fail. Status: Implemented
 
-        2.5.8. `[AGC-0214]` Use explicit `MD Import` status values: `IMPORTED`, `SKIPPED_DUPLICATE_IN_CSV`, `SKIPPED_DUPLICATE_IN_MD`, `INVALID`, `FAILED`, and `DRY_RUN_READY`.
+        2.5.8. `[AGC-0214]` Use explicit `MD Import` status values: `IMPORTED`, `SKIPPED_DUPLICATE_IN_CSV`, `SKIPPED_DUPLICATE_IN_MD`, `INVALID`, `FAILED`, and `DRY_RUN_READY`. Status: Tested
 
-        2.5.9. `[AGC-0215]` Use explicit `MD Verify` status values: `VERIFIED`, `NOT_VERIFIED`, and `NOT_APPLICABLE`.
+        2.5.9. `[AGC-0215]` Use explicit `MD Verify` status values: `VERIFIED`, `NOT_VERIFIED`, and `NOT_APPLICABLE`. Status: Tested
 
-        2.5.10. `[AGC-0216]` Set `MD Verify` to `VERIFIED` only after reopen-from-disk verification confirms the expected account, amount, date, description, category behavior, and `Check#` fingerprint.
+        2.5.10. `[AGC-0216]` Set `MD Verify` to `VERIFIED` only after reopen-from-disk verification confirms the expected account, amount, date, description, category behavior, and `Check#` fingerprint. Status: Tested
 
-        2.5.11. `[AGC-0217]` Dry-run mode must not update the Gift Card CSV by default.
+        2.5.11. `[AGC-0217]` Dry-run mode must not update the Gift Card CSV by default. Status: Tested
 
-        2.5.12. `[AGC-0218]` Dry-run mode must generate a disk report of planned imports, skipped duplicates, invalid rows, and expected status outcomes.
+        2.5.12. `[AGC-0218]` Dry-run mode must generate a disk report of planned imports, skipped duplicates, invalid rows, and expected status outcomes. Status: Tested
 
-        2.5.13. `[AGC-0219]` Use controlled `MD Failure reason` codes plus detail text, including at least `MISSING_BALANCE`, `FINGERPRINT_MISMATCH`, `FINGERPRINT_TOO_LONG`, `AMAZON_NOT_VERIFIED`, `DUPLICATE_IN_CSV`, `DUPLICATE_IN_MD`, `ACCOUNT_MISSING`, and `WRITE_FAILED`.
+        2.5.13. `[AGC-0219]` Use controlled `MD Failure reason` codes plus detail text, including at least `MISSING_BALANCE`, `FINGERPRINT_MISMATCH`, `FINGERPRINT_TOO_LONG`, `AMAZON_NOT_VERIFIED`, `DUPLICATE_IN_CSV`, `DUPLICATE_IN_MD`, `ACCOUNT_MISSING`, and `WRITE_FAILED`. Status: Implemented
 
-        2.5.14. `[AGC-0222]` The dry-run disk report path must be configurable with `MD_GC_DRY_RUN_REPORT_PATH`, defaulting beside the CSV as `amazon-gift-card-import-dry-run.json`; dry-run reporting must include both JSON and CSV outputs.
+        2.5.14. `[AGC-0222]` The dry-run disk report path must be configurable with `MD_GC_DRY_RUN_REPORT_PATH`, defaulting beside the CSV as `amazon-gift-card-import-dry-run.json`; dry-run reporting must include both JSON and CSV outputs. Status: Tested
 
-        2.5.15. `[AGC-0223]` Dry-run report rows with `MD Import` = `DRY_RUN_READY` should use `MD Verify` = `NOT_APPLICABLE`, because no Moneydance write exists to verify.
+        2.5.15. `[AGC-0223]` Dry-run report rows with `MD Import` = `DRY_RUN_READY` should use `MD Verify` = `NOT_APPLICABLE`, because no Moneydance write exists to verify. Status: Tested
 
-        2.5.16. `[AGC-0228]` In apply mode, write Gift Card CSV status updates after each processed row rather than waiting until the whole run completes.
+        2.5.16. `[AGC-0228]` In apply mode, write Gift Card CSV status updates after each processed row rather than waiting until the whole run completes. Status: Implemented
 
-        2.5.17. `[AGC-0229]` Dry-run JSON and CSV reports must include the full source row data along with planned status, verification value, and failure reason details.
+        2.5.17. `[AGC-0229]` Dry-run JSON and CSV reports must include the full source row data along with planned status, verification value, and failure reason details. Status: Tested
 
-        2.5.18. `[AGC-0230]` If the source fingerprint exceeds 30 characters, do not import that row; write a descriptive CSV status and failure reason so the limit can be reviewed during testing.
+        2.5.18. `[AGC-0230]` If the source fingerprint exceeds 30 characters, do not import that row; write a descriptive CSV status and failure reason so the limit can be reviewed during testing. Status: Implemented
 
-        2.5.19. `[AGC-0233]` Rows rejected for an overlong source fingerprint must use `MD Import` = `INVALID` and `MD Failure reason` = `FINGERPRINT_TOO_LONG` plus detail text.
+        2.5.19. `[AGC-0233]` Rows rejected for an overlong source fingerprint must use `MD Import` = `INVALID` and `MD Failure reason` = `FINGERPRINT_TOO_LONG` plus detail text. Status: Implemented
 
-        2.5.20. `[AGC-0234]` Per-row CSV status writes must use a temporary file plus replace of the original CSV, not in-place mutation.
+        2.5.20. `[AGC-0234]` Per-row CSV status writes must use a temporary file plus replace of the original CSV, not in-place mutation. Status: Implemented
 
-        2.5.21. `[AGC-0235]` Remove the temporary CSV file on successful completion after the final replacement succeeds.
+        2.5.21. `[AGC-0235]` Remove the temporary CSV file on successful completion after the final replacement succeeds. Status: Implemented
 
-        2.5.22. `[AGC-0236]` Use the original Gift Card CSV path plus `.tmp` for per-row temporary status writes, for example `amazon-gift-card-transactions.csv.tmp`.
+        2.5.22. `[AGC-0236]` Use the original Gift Card CSV path plus `.tmp` for per-row temporary status writes, for example `amazon-gift-card-transactions.csv.tmp`. Status: Implemented
 
-        2.5.23. `[AGC-0237]` Before the first per-row status write in a run, create one timestamped backup copy of the original Gift Card CSV.
+        2.5.23. `[AGC-0237]` Before the first per-row status write in a run, create one timestamped backup copy of the original Gift Card CSV. Status: Tested
 
-        2.5.24. `[AGC-0238]` If writing CSV status fails, stop the import immediately to avoid divergence between Moneydance changes and CSV status reporting.
+        2.5.24. `[AGC-0238]` If writing CSV status fails, stop the import immediately to avoid divergence between Moneydance changes and CSV status reporting. Status: Implemented
 
-        2.5.25. `[AGC-0240]` Name the timestamped CSV backup as the original CSV path plus `.YYYYMMDD-HHMMSS.bak`.
+        2.5.25. `[AGC-0240]` Name the timestamped CSV backup as the original CSV path plus `.YYYYMMDD-HHMMSS.bak`. Status: Tested
 
-        2.5.26. `[AGC-0241]` If backup creation fails, stop the import before any Moneydance write is attempted.
+        2.5.26. `[AGC-0241]` If backup creation fails, stop the import before any Moneydance write is attempted. Status: Implemented
 
-        2.5.27. `[AGC-0243]` Keep timestamped CSV backups indefinitely for now; revisit retention and cleanup once the importer is stable.
+        2.5.27. `[AGC-0243]` Keep timestamped CSV backups indefinitely for now; revisit retention and cleanup once the importer is stable. Status: Implemented
 
-        2.5.28. `[AGC-0244]` Dry-run report filenames must be timestamped rather than overwritten each run.
+        2.5.28. `[AGC-0244]` Dry-run report filenames must be timestamped rather than overwritten each run. Status: Tested
 
-        2.5.29. `[AGC-0245]` Apply mode must produce a structured JSON summary report in addition to the updated Gift Card CSV.
+        2.5.29. `[AGC-0245]` Apply mode must produce a structured JSON summary report in addition to the updated Gift Card CSV. Status: Tested
 
-        2.5.30. `[AGC-0248]` Add a post-import verification step that compares the Moneydance `Amazon Gift Card` account balance with the Amazon Gift Card balance from the imported source data.
+        2.5.30. `[AGC-0248]` Add a post-import verification step that compares the Moneydance `Amazon Gift Card` account balance with the Amazon Gift Card balance from the imported source data. Status: Tested
 
-        2.5.31. `[AGC-0249]` If the Moneydance account balance and Amazon Gift Card balance do not match, report the mismatch in the log and structured summary report without hiding row-level import results.
+        2.5.31. `[AGC-0249]` If the Moneydance account balance and Amazon Gift Card balance do not match, report the mismatch in the log and structured summary report without hiding row-level import results. Status: Tested
 
     2.6. `[AGC-0076]` Step 2 acceptance criteria. Status: Tested for AGC Test sample import, duplicate detection, disk reopen verification, and final balance match
 
@@ -361,129 +361,131 @@ Each plan item has two identifiers: the outline number shows current structure, 
 
         3.3.4. `[AGC-0278]` Live Deliverable 3 regression check on 2026-09-14: regular Amazon extraction produced `D:\Downloads\amazon-transactions.csv` with 150 rows and expected columns `Credit card|Order number|Date source|Verification|Order amount|Date|MD Verify|MD Match|Item description|MD Failure reason|Transaction type|Order details URL|Overall Result`; run log reported extractor version 1.4.6, 9 pages, 150 records saved, 0 errors, and status completed. Gift Card activity markers were absent from regular order output. Status: Tested
 
-## 4. `[AGC-0094]` Deliverable 4: Confirm Moneydance Account Mapping
+## 4. `[AGC-0094]` Deliverable 4: Confirm Moneydance Account Mapping Status: Implemented
 
-    4.1. `[AGC-0095]` Keep the existing MoneyDanceUpdate account mapping behavior.
+    4.1. `[AGC-0095]` Keep the existing MoneyDanceUpdate account mapping behavior. Status: Implemented
 
-        4.1.1. `[AGC-0096]` Preserve the existing `MD_CARD_ACCOUNT_MAP` configuration entry.
+        4.1.1. `[AGC-0096]` Preserve the existing `MD_CARD_ACCOUNT_MAP` configuration entry. Status: Implemented
 
-        4.1.2. `[AGC-0097]` Confirm that `Amazon Gift Card=Amazon Gift Card` remains configured.
+        4.1.2. `[AGC-0097]` Confirm that `Amazon Gift Card=Amazon Gift Card` remains configured. Status: Implemented
 
-    4.2. `[AGC-0098]` Use the mapping consistently across import and matching.
+    4.2. `[AGC-0098]` Use the mapping consistently across import and matching. Status: Implemented
 
-        4.2.1. `[AGC-0099]` The new Gift Card importer should use the configured Moneydance account name.
+        4.2.1. `[AGC-0099]` The new Gift Card importer should use the configured Moneydance account name. Status: Implemented
 
-        4.2.2. `[AGC-0100]` The existing matcher should continue using the configured account name when matching Amazon order rows paid with Gift Card balance.
+        4.2.2. `[AGC-0100]` The existing matcher should continue using the configured account name when matching Amazon order rows paid with Gift Card balance. Status: Implemented
 
-    4.3. `[AGC-0101]` Step 4 acceptance criteria.
+    4.3. `[AGC-0101]` Step 4 acceptance criteria. Status: Implemented
 
-        4.3.1. `[AGC-0102]` The Gift Card account name is not hard-coded in multiple unrelated places.
+        4.3.1. `[AGC-0102]` The Gift Card account name is not hard-coded in multiple unrelated places. Status: Implemented
 
-        4.3.2. `[AGC-0103]` The existing matcher can find imported Gift Card account transactions after Step 2.
+        4.3.2. `[AGC-0103]` The existing matcher can find imported Gift Card account transactions after Step 2. Status: Implemented
 
-## 5. `[AGC-0104]` Deliverable 5: Match Amazon Order Data to Existing Moneydance Transactions
+## 5. `[AGC-0104]` Deliverable 5: Match Amazon Order Data to Existing Moneydance Transactions Status: Implemented; pending production retest
 
-    5.1. `[AGC-0105]` Leave the current matching responsibility in MoneyDanceUpdate.
+    5.1. `[AGC-0105]` Leave the current matching responsibility in MoneyDanceUpdate. Status: Implemented
 
-        5.1.1. `[AGC-0106]` Keep `moneydance_single_record.py` responsible for matching extracted Amazon order rows to existing Moneydance transactions.
+        5.1.1. `[AGC-0106]` Keep `moneydance_single_record.py` responsible for matching extracted Amazon order rows to existing Moneydance transactions. Status: Implemented
 
-        5.1.2. `[AGC-0107]` Keep `moneydance_production_run.py` and `moneydance_headless_test.py` as the existing orchestration and test entry points unless code inspection shows a safer established path.
+        5.1.2. `[AGC-0107]` Keep `moneydance_production_run.py` and `moneydance_headless_test.py` as the existing orchestration and test entry points unless code inspection shows a safer established path. Status: Implemented
 
-    5.2. `[AGC-0108]` Do not turn the existing matcher into the Gift Card importer.
+    5.2. `[AGC-0108]` Do not turn the existing matcher into the Gift Card importer. Status: Implemented
 
-        5.2.1. `[AGC-0109]` The matcher should continue matching by account, date, amount, sign, and related fields.
+        5.2.1. `[AGC-0109]` The matcher should continue matching by account, date, amount, sign, and related fields. Status: Implemented
 
-        5.2.2. `[AGC-0110]` The matcher should continue writing `MD Match`, `MD Verify`, and `MD Failure reason` back to the Amazon CSV.
+        5.2.2. `[AGC-0110]` The matcher should continue writing `MD Match`, `MD Verify`, and `MD Failure reason` back to the Amazon CSV. Status: Implemented
 
-        5.2.3. `[AGC-0111]` The matcher should benefit from Step 2 because Gift Card account transactions will already exist.
+        5.2.3. `[AGC-0111]` The matcher should benefit from Step 2 because Gift Card account transactions will already exist. Status: Implemented
 
-    5.3. `[AGC-0112]` Step 5 acceptance criteria.
+    5.3. `[AGC-0112]` Step 5 acceptance criteria. Status: Implemented; pending production retest
 
-        5.3.1. `[AGC-0113]` Existing Amazon CSV writeback behavior is preserved.
+        5.3.1. `[AGC-0113]` Existing Amazon CSV writeback behavior is preserved. Status: Implemented
 
-        5.3.2. `[AGC-0114]` Gift Card-paid order rows can match against imported `Amazon Gift Card` account transactions.
+        5.3.2. `[AGC-0114]` Gift Card-paid order rows can match against imported `Amazon Gift Card` account transactions. Status: Implemented
 
-        5.3.3. `[AGC-0115]` Matching failures caused by missing Gift Card account transactions are reduced or eliminated.
+        5.3.3. `[AGC-0115]` Matching failures caused by missing Gift Card account transactions are reduced or eliminated. Status: Pending production retest
 
-## 6. `[AGC-0116]` Deliverable 6: Update Moneydance Memos and Descriptions
+## 6. `[AGC-0116]` Deliverable 6: Update Moneydance Memos and Descriptions Status: Implemented; pending production retest
 
-    6.1. `[AGC-0117]` Preserve existing memo and description update behavior.
+    6.1. `[AGC-0117]` Preserve existing memo and description update behavior. Status: Implemented
 
-        6.1.1. `[AGC-0118]` Keep memo and description updates in `moneydance_single_record.py`.
+        6.1.1. `[AGC-0118]` Keep memo and description updates in `moneydance_single_record.py`. Status: Implemented
 
-        6.1.2. `[AGC-0119]` Do not add Gift Card import responsibilities to the memo update logic.
+        6.1.2. `[AGC-0119]` Do not add Gift Card import responsibilities to the memo update logic. Status: Implemented
 
-    6.2. `[AGC-0120]` Ensure imported Gift Card transactions can participate in existing update flow.
+    6.2. `[AGC-0120]` Ensure imported Gift Card transactions can participate in existing update flow. Status: Implemented
 
-        6.2.1. `[AGC-0121]` Imported Gift Card transactions should have dates, amounts, and account names compatible with the matcher.
+        6.2.1. `[AGC-0121]` Imported Gift Card transactions should have dates, amounts, and account names compatible with the matcher. Status: Implemented
 
-        6.2.2. `[AGC-0122]` Existing matched order rows should update Moneydance memos and descriptions as before.
+        6.2.2. `[AGC-0122]` Existing matched order rows should update Moneydance memos and descriptions as before. Status: Implemented
 
-    6.3. `[AGC-0123]` Step 6 acceptance criteria.
+    6.3. `[AGC-0123]` Step 6 acceptance criteria. Status: Pending production retest
 
-        6.3.1. `[AGC-0124]` Existing memo and description update behavior remains unchanged.
+        6.3.1. `[AGC-0124]` Existing memo and description update behavior remains unchanged. Status: Implemented
 
-        6.3.2. `[AGC-0125]` Gift Card transactions imported by Step 2 can be updated after matching through the existing workflow.
+        6.3.2. `[AGC-0125]` Gift Card transactions imported by Step 2 can be updated after matching through the existing workflow. Status: Pending production retest
 
-## 7. `[AGC-0126]` Deliverable 7: Configuration and Operational Controls
+## 7. `[AGC-0126]` Deliverable 7: Configuration and Operational Controls Status: Implemented
 
-    7.1. `[AGC-0127]` Centralize new configuration in existing config paths.
+    7.1. `[AGC-0127]` Centralize new configuration in existing config paths. Status: Implemented
 
-        7.1.1. `[AGC-0128]` Add Amazon extractor configuration for Gift Card activity page settings, date range reuse, output filename, selectors, and paging safety limits.
+        7.1.1. `[AGC-0128]` Add Amazon extractor configuration for Gift Card activity page settings, date range reuse, output filename, selectors, and paging safety limits. Status: Implemented
 
-        7.1.2. `[AGC-0129]` Add MoneyDanceUpdate configuration for Gift Card CSV input path, target account mapping, duplicate handling, and dry-run behavior.
+        7.1.2. `[AGC-0129]` Add MoneyDanceUpdate configuration for Gift Card CSV input path, target account mapping, duplicate handling, and dry-run behavior. Status: Implemented
 
-    7.2. `[AGC-0130]` Add dry-run and logging controls.
+    7.2. `[AGC-0130]` Add dry-run and logging controls. Status: Implemented
 
-        7.2.1. `[AGC-0131]` Support dry-run mode for the Moneydance importer before creating transactions.
+        7.2.1. `[AGC-0131]` Support dry-run mode for the Moneydance importer before creating transactions. Status: Tested
 
-        7.2.2. `[AGC-0132]` Log extracted Gift Card row counts.
+        7.2.2. `[AGC-0132]` Log extracted Gift Card row counts. Status: Tested
 
-        7.2.3. `[AGC-0133]` Log imported, skipped, duplicate, and failed row counts.
+        7.2.3. `[AGC-0133]` Log imported, skipped, duplicate, and failed row counts. Status: Tested
 
-    7.3. `[AGC-0134]` Step 7 acceptance criteria.
 
-        7.3.1. `[AGC-0135]` No new hard-coded operational paths are required.
+        7.2.4. `[AGC-0279]` Production runs print descriptive operational failures for locked CSV writeback and open Moneydance, and place the final JSON summary plus compact counters block at the end of the log. Status: Implemented
+    7.3. `[AGC-0134]` Step 7 acceptance criteria. Status: Implemented
 
-        7.3.2. `[AGC-0136]` The same date range used by the current extractor controls Gift Card extraction.
+        7.3.1. `[AGC-0135]` No new hard-coded operational paths are required. Status: Implemented
 
-        7.3.3. `[AGC-0137]` A production run can be configured without code edits.
+        7.3.2. `[AGC-0136]` The same date range used by the current extractor controls Gift Card extraction. Status: Tested
 
-## 8. `[AGC-0138]` Deliverable 8: End-to-End Validation
+        7.3.3. `[AGC-0137]` A production run can be configured without code edits. Status: Implemented
 
-    8.1. `[AGC-0139]` Validate the Step 1 extractor independently.
+## 8. `[AGC-0138]` Deliverable 8: End-to-End Validation Status: In progress
 
-        8.1.1. `[AGC-0140]` Run `Extract Gift Card Activity Only`.
+    8.1. `[AGC-0139]` Validate the Step 1 extractor independently. Status: Tested
 
-        8.1.2. `[AGC-0141]` Confirm `amazon-gift-card-transactions.csv` contains the expected configured date range.
+        8.1.1. `[AGC-0140]` Run `Extract Gift Card Activity Only`. Status: Tested
 
-        8.1.3. `[AGC-0142]` Confirm no order/item rows are present.
+        8.1.2. `[AGC-0141]` Confirm `amazon-gift-card-transactions.csv` contains the expected configured date range. Status: Tested
 
-    8.2. `[AGC-0143]` Validate the Step 2 importer independently.
+        8.1.3. `[AGC-0142]` Confirm no order/item rows are present. Status: Tested
 
-        8.2.1. `[AGC-0144]` Run the importer in dry-run mode.
+    8.2. `[AGC-0143]` Validate the Step 2 importer independently. Status: Tested
 
-        8.2.2. `[AGC-0145]` Confirm duplicate detection before writing.
+        8.2.1. `[AGC-0144]` Run the importer in dry-run mode. Status: Tested
 
-        8.2.3. `[AGC-0146]` Run the importer against a test Moneydance book or approved test path before production.
+        8.2.2. `[AGC-0145]` Confirm duplicate detection before writing. Status: Tested
 
-    8.3. `[AGC-0147]` Validate the existing matcher after import.
+        8.2.3. `[AGC-0146]` Run the importer against a test Moneydance book or approved test path before production. Status: Tested
 
-        8.3.1. `[AGC-0148]` Run the existing Amazon order extraction or use an existing Amazon CSV test file.
+    8.3. `[AGC-0147]` Validate the existing matcher after import. Status: Pending production retest
 
-        8.3.2. `[AGC-0149]` Run the existing MoneyDanceUpdate matcher.
+        8.3.1. `[AGC-0148]` Run the existing Amazon order extraction or use an existing Amazon CSV test file. Status: Tested
 
-        8.3.3. `[AGC-0150]` Confirm Gift Card-paid order rows can match against the imported Gift Card account transactions.
+        8.3.2. `[AGC-0149]` Run the existing MoneyDanceUpdate matcher. Status: Pending production retest
 
-    8.4. `[AGC-0151]` Step 8 acceptance criteria.
+        8.3.3. `[AGC-0150]` Confirm Gift Card-paid order rows can match against the imported Gift Card account transactions. Status: Pending production retest
 
-        8.4.1. `[AGC-0152]` Gift Card activity is extracted, imported, and available for matching.
+    8.4. `[AGC-0151]` Step 8 acceptance criteria. Status: Pending production retest
 
-        8.4.2. `[AGC-0153]` Existing Amazon order extraction remains stable.
+        8.4.1. `[AGC-0152]` Gift Card activity is extracted, imported, and available for matching. Status: Implemented
 
-        8.4.3. `[AGC-0154]` Existing Moneydance memo update behavior remains stable.
+        8.4.2. `[AGC-0153]` Existing Amazon order extraction remains stable. Status: Tested
 
-        8.4.4. `[AGC-0155]` Duplicate protection exists in both extraction output and Moneydance import.
+        8.4.3. `[AGC-0154]` Existing Moneydance memo update behavior remains stable. Status: Pending production retest
+
+        8.4.4. `[AGC-0155]` Duplicate protection exists in both extraction output and Moneydance import. Status: Tested
 
 ## 9. `[AGC-0156]` Open Questions
 

@@ -80,6 +80,13 @@ try:
     for index, name in enumerate(counter_names):
         comma = ',' if index < len(counter_names) - 1 else ''
         print('    "%s": %s%s' % (name, counters.get(name, 0), comma))
+    print('  },')
+    print('  "edited_by_account": {')
+    edited_by_account = result.get('edited_by_account', {})
+    account_names = sorted(edited_by_account.keys())
+    for index, account_name in enumerate(account_names):
+        comma = ',' if index < len(account_names) - 1 else ''
+        print('    "%s": %s%s' % (account_name.replace('"', '\\"'), edited_by_account.get(account_name, 0), comma))
     print('  }')
     print('FINAL_COUNTERS_END')
 except (Exception, JavaException) as error:
